@@ -54,6 +54,7 @@ struct proc_struct {
     char name[PROC_NAME_LEN + 1];               // Process name
     list_entry_t list_link;                     // Process link list 
     list_entry_t hash_link;                     // Process hash list
+    int wakeup_times 		       		// Process's waked-up times
 };
 
 #define le2proc(le, member)         \
