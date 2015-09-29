@@ -54,6 +54,7 @@ struct proc_struct {
     char name[PROC_NAME_LEN + 1];               // Process name
     list_entry_t list_link;                     // Process link list 
     list_entry_t hash_link;                     // Process hash list
+    int wakeup_times;                           // Process wake up times
 };
 
 #define le2proc(le, member)         \
@@ -72,6 +73,6 @@ void cpu_idle(void) __attribute__((noreturn));
 struct proc_struct *find_proc(int pid);
 int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
 int do_exit(int error_code);
-
+void waked_up(struct proc_struct *proc);
 #endif /* !__KERN_PROCESS_PROC_H__ */
 
