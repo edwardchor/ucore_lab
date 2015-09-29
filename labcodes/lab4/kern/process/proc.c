@@ -114,7 +114,6 @@ alloc_proc(void) {
         proc->cr3 = boot_cr3;
         proc->flags = 0;
         memset(proc->name, 0, PROC_NAME_LEN);
-        proc->wakeup_times=0;
     }
     return proc;
 }
@@ -334,7 +333,7 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     local_intr_restore(intr_flag);
 
     wakeup_proc(proc);
-    wakedup(proc);
+
     ret = proc->pid;
 fork_out:
     return ret;
@@ -410,8 +409,3 @@ cpu_idle(void) {
     }
 }
 
-//waked_up the wakeup_times will add 1 as long as this function is called
-void waked_up(struct proc_struct *proc)
-{
-    proc->wakedup_times+=1;
-}
