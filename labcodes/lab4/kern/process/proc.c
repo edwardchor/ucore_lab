@@ -184,7 +184,8 @@ proc_run(struct proc_struct *proc) {
             switch_to(&(prev->context), &(next->context));
         }
         local_intr_restore(intr_flag);
-    }
+        proc->wakeup_times+=1;
+       }
 }
 
 // forkret -- the first kernel entry point of a new thread/process
