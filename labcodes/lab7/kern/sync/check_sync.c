@@ -1,10 +1,10 @@
+
 #include <stdio.h>
 #include <proc.h>
 #include <sem.h>
 #include <monitor.h>
 #include <assert.h>
-
-#define N 5 /* 哲学家数目 */
+#define N 5
 #define LEFT (i-1+N)%N /* i的左邻号码 */
 #define RIGHT (i+1)%N /* i的右邻号码 */
 #define THINKING 0 /* 哲学家正在思考 */
@@ -179,8 +179,60 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
     return 0;    
 }
 
+
+
+#include <stdio.h>
+#include <proc.h>
+#include <sem.h>
+#include <assert.h>
+#define TIMES 5//迭代次�
+#define SLEEP_TIME 10//睡眠时间
+semaphore_t mutex; //临界区互斥信号�
+semaphore_t empty; //空闲缓冲�
+semaphore_t full; //缓冲区初始化为空
+int buffer[10];//缓冲区
+int in,out;//指向下一个可用缓冲区的指针
+struct proc_struct *producer_proc[2];
+struct proc_struct *consumer_proc[2];
+//生产者函数:
+
+
+void producer(void * arg){ int id,j=0,iter=0; id=(int)arg;//进程编�
+	while(iter++<TIMES){
+        do_sleep(SLEEP_TIME);
+        down(&empty);
+        down(&mutex);
+        buffer[in]=1;
+        cprintf("producer%d in %d. like: ",id,in);
+        for(j=0;j<10;j++)
+            cprintf("%d",buffer[j]);
+        cprintf("\n");
+in=(in+1)%10;//循环队列加�
+up(&mutex);
+up(&full);
+} }
+
+void consumer(void * arg){
+    int id=0,j=0,iter=0;
+    id=(int)arg;
+    while(iter++<TIMES){
+        do_sleep(SLEEP_TIME);
+        down(&full);
+        down(&mutex);
+        buffer[out]=0;
+        cprintf("consumer%d in %d. like: ",id,out);
+        for(j=0;j<10;j++)
+            cprintf("%d",buffer[j]);
+        cprintf("\n");
+        out=(out+1)%10;
+        up(&mutex);
+        up(&empty);
+} }
+
+
 void check_sync(void){
 
+   /*
     int i;
 
     //check semaphore
@@ -206,4 +258,25 @@ void check_sync(void){
         philosopher_proc_condvar[i] = find_proc(pid);
         set_proc_name(philosopher_proc_condvar[i], "philosopher_condvar_proc");
     }
+  */
+
+int i;
+sem_init(&mutex,1);
+sem_init(&full,0);
+sem_init(&empty,10); in=out=0;
+memset(buffer,0,sizeof(buffer));
+
+for(i=0;i<2;i++){
+        int pid = kernel_thread(producer, (void *)i, 0);
+        if (pid <= 0) {
+	panic("create No.%d producer thread failed.\n"); }
+        producer_proc[i] = find_proc(pid);
+	set_proc_name(producer_proc[i], "producer_proc"); }
+    for(i=0;i<2;i++){
+        int pid = kernel_thread(consumer, (void *)i, 0);
+        if (pid <= 0) {
+	panic("create No.%d consumer thread failed.\n"); }
+        consumer_proc[i] = find_proc(pid);
+	set_proc_name(consumer_proc[i], "consumer_proc"); }
 }
+
