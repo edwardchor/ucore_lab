@@ -123,6 +123,7 @@ alloc_proc(void) {
         proc->lab6_run_pool.left = proc->lab6_run_pool.right = proc->lab6_run_pool.parent = NULL;
         proc->lab6_stride = 0;
         proc->lab6_priority = 0;
+        proc->wakeup_times = 0;
     }
     return proc;
 }
@@ -414,6 +415,7 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     }
 
     proc->parent = current;
+    proc->wakeup_times=current->wakeup_times;
     assert(current->wait_state == 0);
 
     if (setup_kstack(proc) != 0) {
