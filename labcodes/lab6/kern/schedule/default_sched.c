@@ -91,6 +91,7 @@ stride_dequeue(struct run_queue *rq, struct proc_struct *proc) {
      list_del_init(&(proc->run_link));
 #endif
      rq->proc_num --;
+     proc->wakeup_times++;
 }
 /*
  * stride_pick_next pick the element from the ``run-queue'', with the

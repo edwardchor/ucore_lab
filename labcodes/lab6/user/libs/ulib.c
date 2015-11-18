@@ -40,6 +40,11 @@ getpid(void) {
     return sys_getpid();
 }
 
+int
+getwakeuptimes(void){
+    return sys_getwakeuptimes();
+}
+
 //print_pgdir - print the PDT&PT
 void
 print_pgdir(void) {
