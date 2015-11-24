@@ -63,7 +63,7 @@ wakeup_proc(struct proc_struct *proc) {
     {
         if (proc->state != PROC_RUNNABLE) {
             proc->state = PROC_RUNNABLE;
-            proc->wakeup_times+=1;
+            //proc->wakeup_times+=1;
 	    proc->wait_state = 0;
             if (proc != current) {
                 sched_class_enqueue(proc);
